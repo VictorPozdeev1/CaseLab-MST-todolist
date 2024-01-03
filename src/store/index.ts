@@ -1,15 +1,52 @@
-import { t } from "mobx-state-tree";
+import { Instance, applySnapshot, flow, getSnapshot, t } from "mobx-state-tree";
 
-const Todo = t.model({
+const TodoModel = t.model({
   id: t.integer,
   title: t.string,
   completed: t.boolean,
 });
 
-const Store = t.model({
-  todos: t.map(Todo),
+export type TodoType = Instance<typeof TodoModel>;
+
+const TodosStore = t
+  .model({ rawData: t.map(TodoModel) })
+  .actions((self) => ({
+    load: flow(function* todosLoader() {
+      try {
+        const loadedTodos = yield fetch(
+          "https://jsonplaceholder.typicode.com/todos"
+        )
+          .then((response) => response.json())
+          .then((todosArray) =>
+            (todosArray as Array<TodoType>).reduce((a, c, i) => {
+              a[i] = c;
+              return a;
+            }, {} as { [key: string]: {} })
+          );
+        applySnapshot(self, { rawData: loadedTodos });
+      } catch (e) {
+        console.error(e);
+        alert(e);
+      }
+    }),
+    add(title: string, completed: boolean = false) {
+      const newId = Date.now();
+      self.rawData.set(
+        newId,
+        TodoModel.create({ id: newId, title, completed })
+      );
+    },
+  }))
+  .views((self) => ({
+    getAll() {
+      return Array.from(self.rawData.values());
+    },
+  }));
+
+const RootStore = t.model({
+  todos: t.optional(TodosStore, {}),
 });
 
-export const rootStore = Store.create({
-  todos: { [1]: { id: 1, title: "First Task", completed: true } },
-});
+const rootStore = RootStore.create();
+rootStore.todos.load();
+export { rootStore };
