@@ -6,7 +6,7 @@ import { useEffect } from "react";
 
 const App = observer((props) => {
   return (
-    <div>
+    <div style={{ width: "600px", margin: "0 auto", padding: "2rem" }}>
       {rootStore.todos.getAll().map((todo) => (
         <Todo key={todo.id} todo={todo} />
       ))}
