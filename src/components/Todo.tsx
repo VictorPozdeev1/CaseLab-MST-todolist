@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { TodoType } from "../store";
+import { rootStore, TodoType } from "../store";
 
 type TodoProps = { todo: TodoType };
 
@@ -13,6 +13,14 @@ export const Todo = observer(({ todo }: TodoProps) => {
           backgroundColor: "lightblue",
         }}
       >
+        <button
+          style={{ color: "red", margin: "0 0.5rem" }}
+          onClick={() => {
+            rootStore.todos.delete(todo.id);
+          }}
+        >
+          X
+        </button>
         <span style={{ flexGrow: 1 }}>{todo.title}</span>
         <input
           type="checkbox"

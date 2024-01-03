@@ -8,7 +8,6 @@ const TodoModel = t
   })
   .actions((self) => ({
     toggle() {
-      console.log("toggle called, old value:", self.completed);
       self.completed = !self.completed;
     },
   }));
@@ -25,8 +24,8 @@ const TodosStore = t
         )
           .then((response) => response.json())
           .then((todosArray) =>
-            (todosArray as Array<TodoType>).reduce((a, c, i) => {
-              a[i] = c;
+            (todosArray as Array<TodoType>).reduce((a, c) => {
+              a[c.id] = c;
               return a;
             }, {} as { [key: string]: {} })
           );
@@ -42,6 +41,9 @@ const TodosStore = t
         newId,
         TodoModel.create({ id: newId, title, completed })
       );
+    },
+    delete(id: number) {
+      self.rawData.delete(id.toString());
     },
   }))
   .views((self) => ({
