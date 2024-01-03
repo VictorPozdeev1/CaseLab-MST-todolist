@@ -1,10 +1,17 @@
 import { Instance, applySnapshot, flow, getSnapshot, t } from "mobx-state-tree";
 
-const TodoModel = t.model({
-  id: t.integer,
-  title: t.string,
-  completed: t.boolean,
-});
+const TodoModel = t
+  .model({
+    id: t.integer,
+    title: t.string,
+    completed: t.boolean,
+  })
+  .actions((self) => ({
+    toggle() {
+      console.log("toggle called, old value:", self.completed);
+      self.completed = !self.completed;
+    },
+  }));
 
 export type TodoType = Instance<typeof TodoModel>;
 

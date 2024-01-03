@@ -1,8 +1,9 @@
+import { observer } from "mobx-react-lite";
 import { TodoType } from "../store";
 
 type TodoProps = { todo: TodoType };
 
-export const Todo = ({ todo }: TodoProps) => {
+export const Todo = observer(({ todo }: TodoProps) => {
   return (
     <>
       <div
@@ -13,8 +14,14 @@ export const Todo = ({ todo }: TodoProps) => {
         }}
       >
         <span style={{ flexGrow: 1 }}>{todo.title}</span>
-        <input type="checkbox" checked={todo.completed} />
+        <input
+          type="checkbox"
+          checked={todo.completed}
+          onChange={() => {
+            todo.toggle();
+          }}
+        />
       </div>
     </>
   );
-};
+});
